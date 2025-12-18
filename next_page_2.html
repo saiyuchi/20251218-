@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎄 聖誕快樂小測驗 🎄</title>
+  <style>
+    /* 全局樣式與動態降雪背景 */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle, #2c3e50, #000000);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 飄雪動畫 */
+    body::before {
+      content: "❄ ❅ ❆ ❄ ❅ ❆";
+      position: fixed;
+      top: -10%;
+      left: 0;
+      width: 100%;
+      font-size: 24px;
+      color: white;
+      opacity: 0.5;
+      animation: snow 10s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes snow {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(110vh); }
+    }
+
+    header {
+      background-color: #c0392b;
+      color: #f1c40f;
+      padding: 30px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      border-bottom: 5px solid #f1c40f;
+      z-index: 10;
+    }
+
+    h1 { margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-size: 2.5em; }
+
+    .quiz-container {
+      background: rgba(255, 255, 255, 0.95);
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 25px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 4px solid #27ae60;
+      position: relative;
+      z-index: 5;
+    }
+
+    .question-text {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .tree-icon {
+      font-size: 80px;
+      margin: 10px 0;
+      display: block;
+      text-align: center;
+    }
+
+    #options {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .draggable {
+      padding: 12px 20px;
+      margin: 8px;
+      background: #e74c3c;
+      color: white;
+      border: 2px solid #c0392b;
+      border-radius: 50px;
+      cursor: grab;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .draggable:hover {
+      transform: scale(1.1) rotate(3deg);
+      background: #f39c12;
+    }
+
+    .dropzone {
+      margin-top: 30px;
+      padding: 40px 20px;
+      border: 4px dashed #27ae60;
+      border-radius: 20px;
+      background-color: #f1f8e9;
+      color: #27ae60;
+      font-weight: bold;
+      font-size: 1.1em;
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    .dropzone.dragover {
+      background-color: #dcedc8;
+      border-style: solid;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      font-size: 1.2em;
+      min-height: 1.5em;
+    }
+
+    .nav-buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 25px;
+      background: #95a5a6;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+
+    .btn:hover { background: #7f8c8d; }
+
+    /* 彈窗樣式優化 */
+    .win-modal {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 40px;
+      border-radius: 30px;
+      border: 8px solid #f1c40f;
+      text-align: center;
+      box-shadow: 0 0 100px rgba(0,0,0,0.8);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎅 聖誕節驚喜挑戰 🎁</h1>
+  </header>
+
+  <main>
+    <div class="quiz-container">
+      <div class="tree-icon">🎄</div>
+      <p class="question-text">請問：聖誕夜（平安夜）<br>是在哪一個日期呢？</p>
+      
+      <div id="options">
+        <div class="draggable" draggable="true" id="option1">12月24日</div>
+        <div class="draggable" draggable="true" id="option2">12月25日</div>
+        <div class="draggable" draggable="true" id="option3">1月1日</div>
+      </div>
+
+      <div class="dropzone" id="dropzone">🎁 把答案拖到這個禮物盒區</div>
+      
+      <p id="feedback"></p>
+
+      <div class="nav-buttons">
+        <button class="btn" onclick="history.back()">⬅ 上一頁</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const draggables = document.querySelectorAll('.draggable');
+    const dropzone = document.getElementById('dropzone');
+    const feedback = document.getElementById('feedback');
+
+    draggables.forEach(draggable => {
+      draggable.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text', e.target.id);
+        e.target.style.opacity = "0.5";
+      });
+      draggable.addEventListener('dragend', (e) => {
+        e.target.style.opacity = "1";
+      });
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const id = e.dataTransfer.getData('text');
+      
+      if (id === 'option1') {
+        showSuccess();
+      } else {
+        feedback.textContent = '❌ 哎呀，再想一下喔！';
+        feedback.style.color = '#e74c3c';
+        feedback.style.fontWeight = 'bold';
+      }
+    });
+
+    function showSuccess() {
+      feedback.textContent = '✅ 太棒了！你答對了！';
+      feedback.style.color = '#27ae60';
+      feedback.style.fontWeight = 'bold';
+
+      // 創建華麗彈窗
+      const modal = document.createElement('div');
+      modal.className = 'win-modal';
+      modal.innerHTML = `
+        <div style="font-size: 50px;">🎉</div>
+        <h2 style="color: #c0392b; margin: 10px 0;">恭喜答對！</h2>
+        <p style="font-size: 1.1em;">你對聖誕節真的很了解呢！<br>準備好迎接下一關了嗎？</p>
+        <button onclick="location.href='next_page_3.html'" 
+                style="margin-top: 20px; padding: 15px 40px; font-size: 1.2em; 
+                       background: #f1c40f; border: none; border-radius: 50px; 
+                       cursor: pointer; font-weight: bold; color: #7f6000;
+                       box-shadow: 0 4px 0 #b8860b;">
+          前進下一頁 ➔
+        </button>
+      `;
+      document.body.appendChild(modal);
+
+      // 簡單的撒花特效
+      for(let i=0; i<30; i++) {
+        createFirework();
+      }
+    }
+
+    function createFirework() {
+      // 這裡可以加入更複雜的粒子特效，目前已透過 Modal 展現華麗感
+    }
+  </script>
+</body>
+</html>

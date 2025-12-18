@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎄 聖誕夢幻互動教學 🎁</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --berry-red: #d32f2f;
+      --pine-green: #2e7d32;
+      --snow-white: #ffffff;
+      --gold-bell: #fbc02d;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'ZCOOL KuaiLe', 'Microsoft JhengHei', sans-serif;
+      background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+      color: var(--snow-white);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 飄雪背景動畫 */
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: white;
+      user-select: none;
+      z-index: 1000;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(105vh) rotate(360deg); }
+    }
+
+    header {
+      background: rgba(211, 47, 47, 0.9); /* 聖誕紅 */
+      padding: 40px 20px;
+      margin-top: 50px;
+      border-radius: 30px;
+      box-shadow: 0 0 20px var(--gold-bell), inset 0 0 15px rgba(255,255,255,0.3);
+      border: 5px solid var(--gold-bell);
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+
+    /* 裝飾性聖誕掛飾 */
+    header::before, header::after {
+      content: "🔔";
+      position: absolute;
+      top: -25px;
+      font-size: 40px;
+    }
+    header::before { left: 20px; }
+    header::after { right: 20px; }
+
+    h1 {
+      font-size: 3.5rem;
+      margin: 0;
+      color: var(--snow-white);
+      text-shadow: 3px 3px 0px var(--pine-green), 5px 5px 15px rgba(0,0,0,0.5);
+      letter-spacing: 2px;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      margin: 15px 0;
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .main-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 20px;
+      border: 4px solid var(--snow-white);
+      margin: 20px 0;
+      transition: transform 0.3s;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .main-img:hover {
+      transform: scale(1.02) rotate(1deg);
+    }
+
+    /* 華麗的 Start 按鈕 */
+    #start-button {
+      background: linear-gradient(45deg, #ffd700, #ff9800);
+      color: #7b1d1d;
+      border: none;
+      padding: 15px 50px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #b8860b, 0 10px 20px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+      margin-top: 20px;
+      font-family: 'ZCOOL KuaiLe', sans-serif;
+    }
+
+    #start-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #b8860b, 0 15px 25px rgba(0,0,0,0.4);
+      background: linear-gradient(45deg, #fff176, #ffd700);
+    }
+
+    #start-button:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #b8860b;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 30px;
+      font-size: 1.1rem;
+      color: #cfd8dc;
+      text-align: center;
+    }
+
+    .gift-icons {
+      font-size: 2rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div style="font-size: 50px;">🎄</div>
+    <h1>Merry Christmas</h1>
+    <p>🌟 學習有趣的聖誕知識，並體驗互動遊戲！ 🌟</p>
+    
+    <img src="images/about-christmas.jpg" alt="Merry Christmas Art" class="main-img" 
+         onerror="this.src='https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=800&q=80'">
+    
+    <br>
+    <button id="start-button" onclick="location.href='next_page.html'">出發冒險！</button>
+  </header>
+
+  <footer>
+    <div class="gift-icons">🎁 🦌 🎅 🕯️ ❄️</div>
+    <p>© 2024 聖誕教學小夥伴 - 祝您有個愉快的聖誕節！</p>
+  </footer>
+
+  <script>
+    // 自動產生雪花效果
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.classList.add('snowflake');
+      snowflake.innerHTML = '❄';
+      snowflake.style.left = Math.random() * 100 + 'vw';
+      snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+      snowflake.style.opacity = Math.random();
+      snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+      
+      document.body.appendChild(snowflake);
+      
+      setTimeout(() => {
+        snowflake.remove();
+      }, 5000);
+    }
+
+    setInterval(createSnowflake, 150);
+  </script>
+
+  </body>
+</html>

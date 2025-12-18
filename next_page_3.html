@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>聖誕單字接住賽 - 學習小遊戲</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #0a2a43; font-family: 'Arial', sans-serif; color: white; }
+        #game-container { position: relative; width: 100vw; height: 100vh; background: linear-gradient(to bottom, #0a2a43 0%, #1a4a6e 100%); overflow: hidden; }
+        
+        /* 新增：大標題樣式 */
+        .game-title {
+            position: absolute;
+            top: 50px;
+            width: 100%;
+            text-align: center;
+            font-size: 48px;
+            color: #ffcf33;
+            text-shadow: 0 0 10px #ff0000, 2px 2px 5px #000;
+            margin: 0;
+            z-index: 2;
+            pointer-events: none; /* 防止標題擋住滑鼠操作 */
+            letter-spacing: 5px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffcf33, 2px 2px 5px #000; }
+            to { text-shadow: 0 0 25px #fff, 0 0 10px #ffcf33, 2px 2px 5px #000; }
+        }
+
+        /* 雪花效果 */
+        .snowflake { position: absolute; color: white; user-select: none; z-index: 1; }
+
+        /* 玩家控制的聖誕襪 */
+        #player { position: absolute; bottom: 20px; width: 80px; height: 80px; font-size: 60px; text-align: center; transition: transform 0.1s; z-index: 10; cursor: pointer; }
+
+        /* 掉落物 */
+        .item { position: absolute; font-size: 24px; font-weight: bold; white-space: nowrap; padding: 5px 15px; border-radius: 20px; z-index: 5; }
+        .correct { background: rgba(34, 139, 34, 0.8); border: 2px solid #fff; }
+        .wrong { background: rgba(178, 34, 34, 0.8); border: 2px solid #fff; }
+
+        /* 計分板 */
+        #ui { position: absolute; top: 20px; left: 20px; z-index: 100; font-size: 24px; text-shadow: 2px 2px 4px #000; }
+        #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; text-align: center; display: none; z-index: 100; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1 class="game-title">🎄 聖誕單字接住賽 🎄</h1>
+
+    <div id="ui">
+        分數: <span id="score">0</span> | 生命: <span id="lives">3</span>
+        <div style="font-size: 16px; margin-top: 5px;">提示：接住「聖誕英文單字」，避開無關單字！</div>
+    </div>
+    
+    <div id="message">
+        <h2 id="msg-title">遊戲結束</h2>
+        <p>最終得分: <span id="final-score">0</span></p>
+        <div style="margin-top:10px;">
+            <button onclick="location.href='index.html'" style="padding: 10px 20px; font-size: 20px; cursor: pointer; border-radius: 10px; border: none; background: #e74c3c; color: white;">課程重新來過</button>
+            <button onclick="location.href='next_page_4.html'" style="padding: 10px 20px; font-size: 20px; cursor: pointer; border-radius: 10px; border: none; background: #27ae60; color: white; margin-left: 12px;">下一關</button>
+        </div>
+    </div>
+
+    <div id="player">🧦</div>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const player = document.getElementById('player');
+    const scoreElement = document.getElementById('score');
+    const livesElement = document.getElementById('lives');
+    const messageBox = document.getElementById('message');
+
+    let score = 0;
+    let lives = 3;
+    let gameActive = true;
+
+    // 單字資料庫
+    const christmasWords = ['Santa', 'Reindeer', 'Sleigh', 'Gift', 'Snowman', 'Candy Cane', 'Christmas Tree', 'Bell', 'Star', 'Carol'];
+    const distractors = ['Banana', 'Computer', 'Run', 'Yellow', 'School', 'Chair', 'Pencil', 'Ocean'];
+
+    // 1. 產生雪花
+    function createSnowflake() {
+        const snow = document.createElement('div');
+        snow.className = 'snowflake';
+        snow.innerHTML = '❄';
+        snow.style.left = Math.random() * 100 + 'vw';
+        snow.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        snow.style.opacity = Math.random();
+        
+        let pos = -10;
+        const fallInterval = setInterval(() => {
+            pos += 2;
+            snow.style.top = pos + 'px';
+            if (pos > window.innerHeight) {
+                clearInterval(fallInterval);
+                snow.remove();
+            }
+        }, 20);
+        container.appendChild(snow);
+    }
+
+    // 2. 玩家移動 (滑鼠或觸控)
+    window.addEventListener('mousemove', (e) => {
+        if (!gameActive) return;
+        let x = e.clientX - 40;
+        player.style.left = x + 'px';
+    });
+
+    // 3. 產生單字物體
+    function spawnItem() {
+        if (!gameActive) return;
+
+        const item = document.createElement('div');
+        const isCorrect = Math.random() > 0.4;
+        const word = isCorrect 
+            ? christmasWords[Math.floor(Math.random() * christmasWords.length)]
+            : distractors[Math.floor(Math.random() * distractors.length)];
+
+        item.className = 'item ' + (isCorrect ? 'correct' : 'wrong');
+        item.innerText = word;
+        item.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+        item.style.top = '-50px';
+        container.appendChild(item);
+
+        let topPos = -50;
+        const fallSpeed = 3 + (score / 50); // 微調速度公式，讓難度提升更平滑
+
+        const fallInterval = setInterval(() => {
+            if (!gameActive) {
+                clearInterval(fallInterval);
+                item.remove();
+                return;
+            }
+
+            topPos += fallSpeed;
+            item.style.top = topPos + 'px';
+
+            const pRect = player.getBoundingClientRect();
+            const iRect = item.getBoundingClientRect();
+
+            if (iRect.bottom >= pRect.top && iRect.right >= pRect.left && iRect.left <= pRect.right && iRect.top <= pRect.bottom) {
+                if (isCorrect) {
+                    score += 10;
+                    scoreElement.innerText = score;
+                } else {
+                    lives--;
+                    livesElement.innerText = lives;
+                    checkGameOver();
+                }
+                clearInterval(fallInterval);
+                item.remove();
+            }
+
+            if (topPos > window.innerHeight) {
+                if (isCorrect) {
+                    lives--;
+                    livesElement.innerText = lives;
+                    checkGameOver();
+                }
+                clearInterval(fallInterval);
+                item.remove();
+            }
+        }, 20);
+    }
+
+    function checkGameOver() {
+        if (lives <= 0) {
+            gameActive = false;
+            document.getElementById('final-score').innerText = score;
+            messageBox.style.display = 'block';
+        }
+    }
+
+    setInterval(createSnowflake, 200);
+    setInterval(spawnItem, 1500);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聖誕知識大挑戰 - 送禮物賽</title>
+    <style>
+        :root {
+            --red: #c0392b;
+            --green: #27ae60;
+            --snow: #ecf0f1;
+            --gold: #f1c40f;
+            --dark-blue: #0f2027;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Microsoft JhengHei, sans-serif;
+            background: #1a2a6c;
+            color: white;
+            text-align: center;
+            scroll-behavior: smooth;
+        }
+
+        /* 導覽列 */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+
+        .nav-btn {
+            padding: 8px 15px;
+            background: transparent;
+            border: 1px solid var(--snow);
+            color: var(--snow);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--snow);
+            color: var(--dark-blue);
+        }
+
+        /* 標題與卡片樣式 */
+        header { padding: 50px 20px; background: linear-gradient(to bottom, #0f2027, #203a43); }
+        .title { font-size: 3rem; text-shadow: 0 0 10px #ffcf33; margin: 10px 0; }
+        
+        .info-section { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 40px 20px; }
+        .card { background: white; color: #333; width: 250px; padding: 20px; border-radius: 15px; border-bottom: 5px solid var(--red); transition: transform 0.3s; }
+        .card:hover { transform: translateY(-10px); }
+        .card h3 { color: var(--red); }
+
+        /* 遊戲區域 */
+        #game-area {
+            background: #2c3e50;
+            margin: 30px auto 80px auto;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 20px;
+            border: 4px dashed var(--snow);
+            position: relative;
+        }
+
+        .question-box { font-size: 1.5rem; background: var(--red); padding: 15px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 4px #87281e; }
+        .gift-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 30px; }
+        .gift { padding: 15px 25px; background: var(--green); border-radius: 8px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px #145a32; font-weight: bold; }
+        .gift:active { transform: translateY(4px); box-shadow: none; }
+        .score-board { font-size: 1.2rem; margin-bottom: 20px; color: var(--gold); }
+        #result-msg { font-size: 1.2rem; margin-top: 20px; min-height: 1.5em; }
+
+        .chimney-container { display: flex; justify-content: space-around; margin-top: 50px; }
+        .chimney { width: 100px; height: 120px; background: #8e44ad; position: relative; border-top: 10px solid #5e2a77; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;}
+        .chimney::after { content: '🧱'; position: absolute; bottom: 5px; font-size: 25px; }
+
+        /* 結算回饋畫面 */
+        #result-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .medal-icon { font-size: 100px; margin-bottom: 20px; }
+        .feedback-title { font-size: 2.5rem; color: var(--gold); margin-bottom: 10px; }
+        .feedback-desc { font-size: 1.2rem; margin-bottom: 30px; color: var(--snow); white-space: pre-wrap; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+
+        .restart-btn {
+            padding: 12px 40px;
+            font-size: 1.2rem;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .full-reset-btn {
+            padding: 12px 40px;
+            font-size: 1.2rem;
+            background: #5d6d7e;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover, .full-reset-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+    </style>
+</head>
+<body>
+
+<nav class="nav-bar">
+    <button class="nav-btn" onclick="history.back()">← 回上一頁</button>
+    <div style="font-weight: bold; color: var(--gold);">聖誕小教室</div>
+    <div style="width: 80px;"></div> 
+</nav>
+
+<header>
+    <h1 class="title">🎄 聖誕冷知識探險 🎄</h1>
+    <p>先讀完底下的冷知識，再幫聖誕老人把禮物投進正確的煙囪！</p>
+</header>
+
+<div class="info-section">
+    <div class="card">
+        <h3>起源地？</h3>
+        <p>最早的聖誕老人原型是來自土耳其的聖尼古拉主教。</p>
+    </div>
+    <div class="card">
+        <h3>紅鼻子的牠？</h3>
+        <p>魯道夫是第九隻馴鹿，牠的紅鼻子在風雪中能導航。</p>
+    </div>
+    <div class="card">
+        <h3>可口可樂？</h3>
+        <p>現代聖誕老人穿「紅色」衣服，與可口可樂在1930年代的廣告宣傳有很大關係。</p>
+    </div>
+    <div class="card">
+        <h3>聖誕襪？</h3>
+        <p>習俗源於聖尼古拉想幫助貧窮三姊妹，將金幣從煙囪丟下，剛好掉進烘乾的襪子裡。</p>
+    </div>
+</div>
+
+<hr style="width: 80%; border: 1px solid rgba(255,255,255,0.2); margin: 40px auto;">
+
+<h2 id="quiz-start">🎅 聖誕投遞挑戰賽</h2>
+<div id="game-area">
+    <div class="score-board">目前分數：<span id="score">0</span> / 4</div>
+    
+    <div id="quiz-content">
+        <div class="question-box" id="question">題目載入中...</div>
+        <div class="gift-container" id="options"></div>
+    </div>
+
+    <div id="result-msg"></div>
+
+    <div class="chimney-container">
+        <div class="chimney">煙囪 A</div>
+        <div class="chimney">煙囪 B</div>
+        <div class="chimney">煙囪 C</div>
+    </div>
+</div>
+
+<div id="result-overlay">
+    <div class="medal-icon" id="medal-icon">🏆</div>
+    <div class="feedback-title" id="feedback-title">恭喜完成！</div>
+    <div class="feedback-desc" id="feedback-desc">評價載入中...</div>
+    
+    <div class="btn-group">
+        <button class="restart-btn" onclick="resetQuizOnly()">再測驗一次</button>
+      
+        <button class="full-reset-btn" onclick="location.href='index.html'">🏠 回到課程首頁</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { q: "現代聖誕老人的紅色形象與哪家公司廣告有關？", options: ["百事可樂", "可口可樂", "麥當勞"], correct: 1 },
+        { q: "聖誕老人最初的原型來自哪個國家？", options: ["土耳其", "芬蘭", "美國"], correct: 0 },
+        { q: "哪隻馴鹿擁有發光的紅鼻子？", options: ["達夏", "舞者", "魯道夫"], correct: 2 },
+        { q: "金幣掉進襪子的故事是為了幫助誰？", options: ["賣火柴女孩", "貧窮三姊妹", "孤兒院的孩子"], correct: 1 }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const scoreEl = document.getElementById('score');
+    const msgEl = document.getElementById('result-msg');
+    const overlay = document.getElementById('result-overlay');
+
+    function loadQuiz() {
+        if (currentIdx >= quizData.length) {
+            showFinalResult();
+            return;
+        }
+        msgEl.innerText = "";
+        const data = quizData[currentIdx];
+        questionEl.innerText = `Q${currentIdx + 1}: ${data.q}`;
+        optionsEl.innerHTML = "";
+        data.options.forEach((opt, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'gift';
+            btn.innerText = `🎁 ${opt}`;
+            btn.onclick = () => checkAnswer(index);
+            optionsEl.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(choice) {
+        if (choice === quizData[currentIdx].correct) {
+            score++;
+            scoreEl.innerText = score;
+            msgEl.style.color = "#2ecc71";
+            msgEl.innerText = "✅ 答對了！禮物成功投進煙囪！";
+            setTimeout(() => {
+                currentIdx++;
+                loadQuiz();
+            }, 1000);
+        } else {
+            msgEl.style.color = "#e74c3c";
+            msgEl.innerText = "❌ 哎呀，投錯人家了，再試一次！";
+        }
+    }
+
+    function showFinalResult() {
+        overlay.style.display = 'flex';
+        const medal = document.getElementById('medal-icon');
+        const title = document.getElementById('feedback-title');
+        const desc = document.getElementById('feedback-desc');
+
+        if (score === 4) {
+            medal.innerText = "👑";
+            title.innerText = "傳說級聖誕老人！";
+            desc.innerText = "獲得滿分 4 分！\n你對聖誕知識瞭若指掌，\n絕對是聖誕節的超級大達人！";
+        } else if (score >= 2) {
+            medal.innerText = "🌟";
+            title.innerText = "聖誕知識達人";
+            desc.innerText = `獲得了 ${score} 分！\n表現得很棒！你已經具備幫忙\n聖誕老人分發禮物的實力了。`;
+        } else {
+            medal.innerText = "🎄";
+            title.innerText = "聖誕實習生";
+            desc.innerText = `獲得了 ${score} 分！\n沒關係，再多讀幾次上方的知識卡片，\n明年你一定會更棒！`;
+        }
+    }
+
+    function resetQuizOnly() {
+        currentIdx = 0;
+        score = 0;
+        scoreEl.innerText = score;
+        overlay.style.display = 'none';
+        loadQuiz();
+    }
+
+    function fullReset() {
+        currentIdx = 0;
+        score = 0;
+        scoreEl.innerText = score;
+        overlay.style.display = 'none';
+        loadQuiz();
+        window.scrollTo(0, 0); // 回到最上方閱讀區
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

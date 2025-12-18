@@ -1,0 +1,80 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+}
+
+/* 設定整體頁面樣式 */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  color: #333;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+header {
+  background-color: #d32f2f;
+  color: white;
+  padding: 20px 0;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5em;
+}
+
+header p {
+  margin: 10px 0 0;
+  font-size: 1.2em;
+}
+
+header img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  max-height: 70vh; /* 限制圖片高度，避免過長 */
+}
+
+/* 移除多餘的樣式，保留白色背景 */
+main {
+  padding: 0;
+  background-color: white;
+}
+
+#interactive-area {
+  display: none;
+}
+
+footer {
+  background-color: #388e3c;
+  color: white;
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+footer p {
+  margin: 0;
+}
+
+#start-button {
+  font-size: 20px;
+  background-color: #ffcccc;
+  border: 2px solid #ff6666;
+  border-radius: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+  display: inline-block;
+}
+
+#start-button:hover {
+  background-color: #ff9999;
+}
